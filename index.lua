@@ -1,17 +1,29 @@
 function _init()
-  collision_sprites = { 0, 2 }
+  win = false
+
+  sprites = {
+    wall = 1,
+    box = 2,
+    goal = 3
+  }
 
   make_player()
+  make_boxes()
 end
 
 function _update()
-  move_player()
+  if not win then
+    move_player_and_boxes()
+    check_win()
+  end
 end
 
 function _draw()
   cls()
   map()
+
   draw_player()
-  print(flr(player.x / 8))
-  print(flr(player.y / 8))
+  draw_boxes()
+
+  if (win) print('you won!', 50, 10)
 end

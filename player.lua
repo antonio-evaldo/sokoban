@@ -6,37 +6,62 @@ function make_player()
   }
 end
 
-function move_player()
+function make_boxes()
+  box = {
+    x = 8 * 8,
+    y = 8 * 8,
+    sprite = sprites.box
+  }
+end
+
+function move_player_and_boxes()
   local move = { x = 0, y = 0 }
 
   if (btnp(0)) move.x = -8
   if (btnp(1)) move.x = 8
   if (btnp(2)) move.y = -8
   if (btnp(3)) move.y = 8
-  if check_collision(player.x + move.x, player.y + move.y) then
+  local newPlayerX = player.x + move.x
+  local newPlayerY = player.y + move.y
+
+  if collinding_wall(newPlayerX, newPlayerY) then return end
+
+  if not collinding_box(newPlayerX, newPlayerY) then
     player.x += move.x
     player.y += move.y
   end
+
+  if collinding_box(newPlayerX, newPlayerY) and not collinding_wall(box.x + move.x, box.y + move.y) then
+    player.x += move.x
+    player.y += move.y
+
+    box.x += move.x
+    box.y += move.y
+  end
 end
 
-function check_collision(x, y)
-  -- for sprite in all(collision_sprites) do
-  --   local is_colliding = mget(x / 8, y / 8) == sprite
-
-  --   if is_colliding then
-  --     return true
-  --   end
-  -- end
-
-  -- return false
-
-  return mget(x / 8, y / 8) != 1 and mget(x / 8, y / 8) != 2
+function collinding_wall(x, y)
+  return mget_coord(x, y) == sprites.wall
 end
 
-function get_player_tile_map()
-  return mget(flr(player.x / 8), flr(player.y / 8))
+function mget_coord(x, y)
+  return mget(x / 8, y / 8)
+end
+
+function collinding_box(x, y)
+  return x == box.x and y == box.y
+end
+
+function check_win()
+  if mget_coord(box.x, box.y) == sprites.goal then
+    win = true
+  end
 end
 
 function draw_player()
   spr(player.sprite, player.x, player.y)
+end
+
+function draw_boxes()
+  spr(box.sprite, box.x, box.y)
 end
