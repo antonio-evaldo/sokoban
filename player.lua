@@ -44,10 +44,6 @@ function collinding_wall(x, y)
   return mget_coord(x, y) == sprites.wall
 end
 
-function mget_coord(x, y)
-  return mget((x / 8) + (level - 1) * 16, y / 8)
-end
-
 function collinding_box(x, y)
   return x == box.x and y == box.y
 end
