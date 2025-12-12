@@ -7,11 +7,7 @@ function make_player()
 end
 
 function make_boxes()
-  box = {
-    x = nil,
-    y = nil,
-    sprite = sprites.box
-  }
+  boxes = {}
 end
 
 function move_player_and_boxes()
@@ -21,43 +17,79 @@ function move_player_and_boxes()
   if (btnp(1)) move.x = 8
   if (btnp(2)) move.y = -8
   if (btnp(3)) move.y = 8
-  local newPlayerX = player.x + move.x
-  local newPlayerY = player.y + move.y
+  local newPlayerPos = {
+    x = player.x + move.x,
+    y = player.y + move.y
+  }
 
-  if collinding_wall(newPlayerX, newPlayerY) then return end
+  if collinding_wall(newPlayerPos) then return end
 
-  if collinding_water(newPlayerX, newPlayerY) then game_over = true end
+  if collinding_water(newPlayerPos) then game_over = true end
 
-  if not collinding_box(newPlayerX, newPlayerY) then
+  if not collinding_box(newPlayerPos) then
     player.x += move.x
     player.y += move.y
   end
 
-  if collinding_box(newPlayerX, newPlayerY) and not collinding_wall(box.x + move.x, box.y + move.y) then
-    player.x += move.x
-    player.y += move.y
+  if collinding_box(newPlayerPos) then
+    local box_id = get_collinding_box(newPlayerPos)
 
-    box.x += move.x
-    box.y += move.y
+    local newBoxPos = {
+      x = newPlayerPos.x + move.x,
+      y = newPlayerPos.y + move.y
+    }
+
+    if not collinding_wall(newBoxPos) then
+      player.x += move.x
+      player.y += move.y
+
+      boxes[box_id].x += move.x
+      boxes[box_id].y += move.y
+      -- elseif collinding_box(newBoxPos) then
+      --   local newSecondBoxPos = {
+      --     x = newBoxPos.x + move.x,
+      --     y = newBoxPos.y + move.y
+      --   }
+    end
+    -- and can_move(newPlayerPos, move)
   end
 end
 
-function collinding_wall(x, y)
-  return mget_coord(x, y) == sprites.wall
+function can_move(point, move)
+  return true
+  -- return collinding_nothing(box.x + move.x, box.y + move.y)
+  -- return not collinding_wall(box.x + move.x, box.y + move.y)
+  -- return false
 end
 
-function collinding_water(x, y)
-  return mget_coord(x, y) == sprites.water
+function collinding_nothing(point)
+  return mget_coord(point.x, point.y) == 0
 end
 
-function collinding_box(x, y)
-  return x == box.x and y == box.y
+function collinding_wall(point)
+  return mget_coord(point.x, point.y) == sprites.wall
+end
+
+function collinding_water(point)
+  return mget_coord(point.x, point.y) == sprites.water
+end
+
+function collinding_box(point)
+  for box in all(boxes) do
+    if (point.x == box.x and point.y == box.y) return true
+  end
+end
+
+function get_collinding_box(point)
+  for box in all(boxes) do
+    if (point.x == box.x and point.y == box.y) return box.id
+  end
 end
 
 function check_win()
-  if mget_coord(box.x, box.y) == sprites.goal then
-    win = true
-  end
+  -- if mget_coord(box.x, box.y) == sprites.goal then
+  --   win = true
+  -- end
 end
 
 function draw_player()
@@ -65,5 +97,7 @@ function draw_player()
 end
 
 function draw_boxes()
-  spr(box.sprite, box.x, box.y)
+  for box in all(boxes) do
+    spr(sprites.box, box.x, box.y)
+  end
 end

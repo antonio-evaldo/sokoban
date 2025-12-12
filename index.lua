@@ -7,7 +7,18 @@ function _init()
     box = 2,
     goal = 3,
     water = 4,
-    player = 16
+    player = 16,
+    pieces = {
+      criar = { 64, 65 },
+      po = 66,
+      n = 67,
+      te = 68
+    },
+    words = {
+      ponte = {
+        pieces = { 66, 67, 68 }
+      }
+    }
   }
 
   level = 2

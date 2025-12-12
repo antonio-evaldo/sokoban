@@ -1,13 +1,17 @@
 function make_map()
+  local box_id = 1
+
   for x = 0, 15 do
     for y = 0, 15 do
       if mget_in_level(x, y) == player.sprite then
         player.x = x * 8
         player.y = y * 8
         mset_in_level(x, y, 0) -- remove player from static map
-      elseif mget_in_level(x, y) == box.sprite then
-        box.x = x * 8
-        box.y = y * 8
+      elseif mget_in_level(x, y) == sprites.box then
+        add(boxes, { id = box_id, x = x * 8, y = y * 8 })
+
+        box_id += 1
+
         mset_in_level(x, y, 0) -- remove box from static map
       end
     end
