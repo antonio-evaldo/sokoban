@@ -1,14 +1,16 @@
 function _init()
   win = false
+  game_over = false
 
   sprites = {
     wall = 1,
     box = 2,
     goal = 3,
+    water = 4,
     player = 16
   }
 
-  level = 1
+  level = 2
 
   make_player()
   make_boxes()
@@ -16,7 +18,7 @@ function _init()
 end
 
 function _update()
-  if not win then
+  if not win and not game_over then
     move_player_and_boxes()
     check_win()
   end
@@ -29,5 +31,9 @@ function _draw()
   draw_player()
   draw_boxes()
 
-  if (win) print('you won!', 50, 10)
+  if win then
+    print('you won!', 50, 10)
+  elseif game_over then
+    print('you lost.', 50, 10)
+  end
 end

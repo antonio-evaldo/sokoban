@@ -26,6 +26,8 @@ function move_player_and_boxes()
 
   if collinding_wall(newPlayerX, newPlayerY) then return end
 
+  if collinding_water(newPlayerX, newPlayerY) then game_over = true end
+
   if not collinding_box(newPlayerX, newPlayerY) then
     player.x += move.x
     player.y += move.y
@@ -42,6 +44,10 @@ end
 
 function collinding_wall(x, y)
   return mget_coord(x, y) == sprites.wall
+end
+
+function collinding_water(x, y)
+  return mget_coord(x, y) == sprites.water
 end
 
 function collinding_box(x, y)
