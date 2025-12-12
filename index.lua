@@ -4,11 +4,15 @@ function _init()
   sprites = {
     wall = 1,
     box = 2,
-    goal = 3
+    goal = 3,
+    player = 16
   }
+
+  level = 1
 
   make_player()
   make_boxes()
+  make_map()
 end
 
 function _update()
@@ -20,8 +24,8 @@ end
 
 function _draw()
   cls()
-  map()
 
+  draw_map()
   draw_player()
   draw_boxes()
 

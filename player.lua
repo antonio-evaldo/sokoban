@@ -1,15 +1,15 @@
 function make_player()
   player = {
-    x = 7 * 8,
-    y = 6 * 8,
-    sprite = 16
+    x = nil,
+    y = nil,
+    sprite = sprites.player
   }
 end
 
 function make_boxes()
   box = {
-    x = 8 * 8,
-    y = 8 * 8,
+    x = nil,
+    y = nil,
     sprite = sprites.box
   }
 end
@@ -45,7 +45,7 @@ function collinding_wall(x, y)
 end
 
 function mget_coord(x, y)
-  return mget(x / 8, y / 8)
+  return mget((x / 8) + (level - 1) * 16, y / 8)
 end
 
 function collinding_box(x, y)
