@@ -47,4 +47,7 @@ function _draw()
   elseif game_over then
     print('you lost.', 50, 10)
   end
+
+  print(player.x)
+  print(player.y)
 end
