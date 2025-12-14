@@ -36,18 +36,18 @@ function move_player_and_boxes()
 
   if collinding_water(newPlayerPosition) then game_over = true end
 
-  if collinding_wall(newPlayerPosition) then return end
+  local empty_or_wall = findNextEmptyTileOrWall(move)
 
-  local empty_tile = findNextEmptyTileForMovement(move)
+  if empty_or_wall == nil or empty_or_wall.type == "wall" then return end
 
-  if empty_tile == nil then return end
-
+  -- if there's at least one empty tile before the next wall/limit, move the player.
   player.x = newPlayerPosition.x
   player.y = newPlayerPosition.y
 
+  -- move all boxes (if any) between player and next empty tile
   local tileToMove = { x = newPlayerPosition.x, y = newPlayerPosition.y }
 
-  while not samePoints(tileToMove, empty_tile) do
+  while not samePoints(tileToMove, empty_or_wall) do
     local box_id = get_collinding_box(tileToMove)
 
     if box_id then
@@ -58,57 +58,9 @@ function move_player_and_boxes()
     tileToMove.x += move.x
     tileToMove.y += move.y
   end
-
-  -- local box_id = get_collinding_box(newPlayerPosition)
-
-  -- if box_id == false then
-  --   player.x = newPlayerPosition.x
-  --   player.y = newPlayerPosition.y
-  -- else
-  --   local newBoxPosition = {
-  --     x = newPlayerPosition.x + move.x,
-  --     y = newPlayerPosition.y + move.y
-  --   }
-
-  --   if collinding_wall(newBoxPosition) then return end
-
-  --   local second_box_id = get_collinding_box(newBoxPosition)
-
-  --   if second_box_id == false then
-  --     player.x = newPlayerPosition.x
-  --     player.y = newPlayerPosition.y
-
-  --     boxes[box_id].x = newBoxPosition.x
-  --     boxes[box_id].y = newBoxPosition.y
-  --   else
-  --     local newSecondBoxPosition = {
-  --       x = newBoxPosition.x + move.x,
-  --       y = newBoxPosition.y + move.y
-  --     }
-
-  --     if collinding_wall(newSecondBoxPosition) then return end
-
-  --     local third_box_id = get_collinding_box(newSecondBoxPosition)
-
-  --     if third_box_id == false then
-  --       player.x = newPlayerPosition.x
-  --       player.y = newPlayerPosition.y
-
-  --       boxes[box_id].x = newBoxPosition.x
-  --       boxes[box_id].y = newBoxPosition.y
-
-  --       boxes[second_box_id].x = newSecondBoxPosition.x
-  --       boxes[second_box_id].y = newSecondBoxPosition.y
-  --     else
-  --     end
-  --   end
-
-  -- and can_move(newPlayerPosition, move)
-  -- end
 end
 
--- For now, an empty tile is any tile that isn't a wall or box
-function findNextEmptyTileForMovement(move)
+function findNextEmptyTileOrWall(move)
   local check_point = {
     x = player.x + move.x,
     y = player.y + move.y
@@ -118,6 +70,12 @@ function findNextEmptyTileForMovement(move)
     local box_id = get_collinding_box(check_point)
 
     if not collinding_wall(check_point) and box_id == nil then
+      check_point.type = "empty"
+
+      return check_point
+    elseif collinding_wall(check_point) then
+      check_point.type = "wall"
+
       return check_point
     end
 
@@ -125,19 +83,9 @@ function findNextEmptyTileForMovement(move)
     check_point.y += move.y
   end
 
+  -- returns nil when couldn't find any empty tile or wall until screen limit. It happens when you have colliding boxes between player and the limit, for example.
   return nil
 end
-
--- function can_move(point, move)
---   return true
---   -- return collinding_nothing(box.x + move.x, box.y + move.y)
---   -- return not collinding_wall(box.x + move.x, box.y + move.y)
---   -- return false
--- end
-
--- function collinding_nothing(point)
---   return mget_coord(point.x, point.y) == 0
--- end
 
 function collinding_wall(point)
   return mget_coord(point.x, point.y) == sprites.wall
@@ -147,7 +95,7 @@ function collinding_water(point)
   return mget_coord(point.x, point.y) == sprites.water
 end
 
--- If there's a colliding box in the given point, returns the box's id. If not, return nil.
+-- If there's a colliding box in the given point, returns the box's id. If not, returns nil.
 function get_collinding_box(point)
   for box in all(boxes) do
     if (samePoints(point, box)) return box.id
